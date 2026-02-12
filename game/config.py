@@ -10,7 +10,7 @@ Github: https://github.com/f4hrid
 MAX_HITS = 3
 
 MAX_JUMP = 5
-JUMP = 0.5
+JUMP = 1
 MAX_SPEED = 5
 SPEED = 1 #
 WEIGHT = 1
@@ -24,7 +24,7 @@ POWER = None
 
 FPS = 60
 
-SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
+SCREEN_WIDTH, SCREEN_HEIGHT = 640, 720
 
 # Tamaños generales de los objetos (no afectan la hitbox, son exclusivamente visuales)
 

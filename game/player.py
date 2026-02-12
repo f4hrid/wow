@@ -25,7 +25,7 @@ class Player:
         self.amount = 5
         self.sprite_sheet = Spritesheet("assets/spritesheet.png", (32, 32), (128, 128), 5)
         self.image = self.sprite_sheet.get_sprite()[0]
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(center=(SCREEN_WIDTH / 2, self.world.floor))
 
 
         self.hitbox = None
@@ -45,6 +45,7 @@ class Player:
         self.is_jumping = key[pygame.K_w]
 
     def update(self):
+        #self.world.apply_gravity(self.rect)
         self.apply_movement()
 
     def draw(self, surface: pygame.Surface):
@@ -52,11 +53,12 @@ class Player:
         self.draw_rect(self.image)
 
     def apply_movement(self):
-        self.world.apply_gravity(self.dy)
         self.apply_friction()
         self.apply_acceleration()
-        self.clamp_speed()
+        self.max_clamp_speed()
         self.apply_jump()
+        self.max_clamp_jump()
+
         self.update_position()
 
     def apply_acceleration(self):
@@ -68,7 +70,7 @@ class Player:
 
     def apply_jump(self):
         if self.is_jumping:
-            self.dy -= self.jump
+            self.dy += -self.jump
 
     def apply_friction(self):
         # aplica fricción para generar un derrape
@@ -80,15 +82,16 @@ class Player:
         else:
             self.dx = max(self.dx - self.slip, 0)
 
-    def clamp_speed(self):
-        #fija la velocidad limite
+    def max_clamp_speed(self):
+        # fija la velocidad limite
         self.dx = max(-self.max_speed, min(self.dx, self.max_speed))
 
-    def clamp_jump(self):
-        self.dy = max()
+    def max_clamp_jump(self):
+        # fija la velocidad de salto al limite
+        self.dy = max(-self.max_jump, min(self.dy, self.max_jump))
 
     def update_position(self):
-        #print("aceleración %s; impulsión %s" %(self.dx, self.dy))
+        #print("aceleración %s; impulsión %s; \nizq %s; der %s; jump %s" %(self.dx, self.dy, self.is_moving_left, self.is_moving_right, self.is_jumping))
         self.rect.x += self.dx
         self.rect.y += self.dy
 

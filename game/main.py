@@ -8,8 +8,6 @@ from pygame._sdl2 import Window
 from game.config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 
 
-
-
 class Game:
     def __init__(self):
         pygame.init()

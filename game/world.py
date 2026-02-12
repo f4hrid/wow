@@ -3,8 +3,9 @@ from game.config import GRAVITY
 
 
 class World:
-    def __init___(self):
+    def __init__(self):
         self.floor = 555
+        self.gravity = GRAVITY
 
     def update(self):
         pass
@@ -12,8 +13,7 @@ class World:
     def draw(self, surface: pygame.Surface):
         surface.fill(pygame.Color("black"))
 
-
-    @staticmethod
-    def apply_gravity(dy: int):
-        dy += GRAVITY
-        print(dy)
+    def apply_gravity(self, rect: pygame.Rect):
+        dy = 1
+        dy += self.gravity
+        rect.y += dy
