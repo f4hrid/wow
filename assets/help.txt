@@ -1,0 +1,16 @@
+información relevante
+
+patrones de prefijos para bool en PEP8
+
+is_ para estados
+is_active, is_valid, is_connected
+
+has_ para posesión
+has_permission, has_items
+
+can_ para capacidad
+can_edit, can_run
+
+should_ para decisiones lógicas (normalmente)
+should_retry, should_save
+
