@@ -7,17 +7,13 @@ Github: https://github.com/f4hrid
 
 
 # Configuración del juego
-MAX_HITS = 3
+HITS = 3
 
-MAX_JUMP = 5
-JUMP = 1
+JUMP = 20
 MAX_SPEED = 5
-SPEED = 1 #
-WEIGHT = 1
-REBOUND = 1
-DELTA_X = 1
-DELTA_Y = 1
 SLIP = 0.25 # SLIP < MAX_SPEED (mientras más igualado este a SPEED, más seco sera el derrape)
+SPEED = 1 #
+REBOUND = 1
 GRAVITY = 1
 
 POWER = None

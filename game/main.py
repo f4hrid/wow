@@ -44,6 +44,7 @@ class Game:
     def draw(self):
         self.world.draw(self.screen)
         self.player.draw(self.screen)
+        self.player.properties(self.screen)
 
     def start(self):
         self.loop()
