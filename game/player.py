@@ -87,9 +87,6 @@ class Player:
             self.turn_over(False)
 
     def apply_gravity(self):
-        if self.on_ground:
-            return
-
         self.dy += self.world.getGravitational()
 
     def stay_on_floor(self):
@@ -134,7 +131,7 @@ class Player:
 
     def properties(self, screen: pygame.Surface):
         txt = pygame.font.SysFont("Arial", 20).render(
-            "aceleración %s; impulsión %s; izq %s; der %s" %(self.dx, self.dy, self.is_leftward, self.is_rightward),
+            "aceleración %s; atración %s; izq %s; der %s" %(self.dx, self.dy, self.is_leftward, self.is_rightward),
             True,
             Color("white")
         )
