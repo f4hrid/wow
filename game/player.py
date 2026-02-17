@@ -1,9 +1,7 @@
-from operator import truediv
-
 import pygame
 from pygame.color import Color
 from game.spritesheet import Spritesheet
-from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, POWER, SCREEN_WIDTH
+from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, SCREEN_WIDTH
 from game.world import World
 
 
@@ -26,7 +24,7 @@ class Player:
         self.resize = (256, 256)
         self.amount = 5
         self.sprite_sheet = Spritesheet("assets/spritesheet.png", (32, 32), (128, 128), 5)
-        self.image = self.sprite_sheet.get_sprite()[0]
+        self.image = self.sprite_sheet.sprite_list[0]
         self.rect = self.image.get_rect(center=(SCREEN_WIDTH / 2, 100))
 
 
@@ -36,7 +34,6 @@ class Player:
         self.current_side = "right"
 
         self.on_ground = False
-
 
         self.is_leftward = False
         self.is_rightward = False
@@ -90,6 +87,7 @@ class Player:
         self.dy += self.world.getGravitational()
 
     def stay_on_floor(self):
+        # establece suelo del mundo
         if self.rect.bottom < self.world.floor:
             return
 
@@ -97,19 +95,20 @@ class Player:
         self.dy = 0
         self.on_ground = True
 
+    def apply_jump(self):
+        # genera fuerza de salto
+        if not (self.is_upward and self.on_ground):
+            return
+
+        self.dy = -self.jump
+        self.on_ground = False
+
     def apply_acceleration(self):
         # fomenta la aceleración progresiva con delta
         if self.is_leftward:
             self.dx -= self.speed
         elif self.is_rightward:
             self.dx += self.speed
-
-    def apply_jump(self):
-        if not (self.is_upward and self.on_ground):
-            return
-
-        self.dy = -self.jump
-        self.on_ground = False
 
     def apply_friction(self):
         # aplica fricción para generar un derrape
