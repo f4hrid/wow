@@ -1,55 +1,66 @@
 
 import pygame
 import sys
-from game.world import World
-from game.player import Player
-from typing import Any
 from pygame._sdl2 import Window
-from game.config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
+from game.renderer import Renderer
+from game.world import World
+from typing import Any
+from game.config import MAXIMIZED, WIDTH, HEIGHT, FPS
 
 
 class Game:
+    """ Clase del juego. """
+
     def __init__(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode(size=[SCREEN_WIDTH, SCREEN_HEIGHT], flags=pygame.RESIZABLE)
-        self.clock = pygame.time.Clock()
+        """ Constructor: """
 
+        self.fps = FPS
+        self.maximized = not MAXIMIZED
+        self.width, self.height = WIDTH, HEIGHT
+
+        self.renderer: Renderer = Renderer(self.width, self.height)
         self.world: World = World()
-        self.player: Player = Player(self.world)
-
-        #Window.from_display_module().maximize() # ventana completa
+        self.renderer.world = self.world
 
 
     def loop(self):
+        """ Loop del juego. """
+
+        clock = pygame.time.Clock()
+
         while True:
+            if not self.maximized:
+                Window.from_display_module().maximize()
+                self.maximized = True
+
             input_events: list[Any] = pygame.event.get()
             for event in input_events:
                 if event.type == pygame.QUIT:
-                    Game.quit()
+                    close()
 
-            self.input()
-            self.update()
-            self.draw()
-            self.clock.tick(FPS)
 
-            pygame.display.flip()
+            self._handle_inputs()
 
-    def input(self):
-        self.player.handle_input()
+            self.world.update()
+            self.renderer.render()
+            clock.tick(self.fps)
 
-    def update(self):
-        self.world.update()
-        self.player.update()
 
-    def draw(self):
-        self.world.draw(self.screen)
-        self.player.draw(self.screen)
-        self.player.properties(self.screen)
+    def _handle_inputs(self):
+        key = pygame.key.get_pressed()
+        self.world.player.is_leftward = key[pygame.K_a] and not key[pygame.K_d]
+        self.world.player.is_rightward = key[pygame.K_d] and not key[pygame.K_a]
+        self.world.player.is_upward = key[pygame.K_w]
 
-    def start(self):
-        self.loop()
 
-    @staticmethod
-    def quit() -> None:
-        pygame.quit()
-        sys.exit()
+def close() -> None:
+    """ Cierra el juego. """
+    pygame.quit()
+    sys.exit()
+
+def main() -> None:
+    """ Corre el juego. """
+    pygame.init()
+    app = Game()
+    app.loop()
+    close()
