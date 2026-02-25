@@ -1,5 +1,7 @@
 import pygame
 from pygame.color import Color
+
+from game.animation import SpritesheetAnimation
 from game.assetloader import AssetLoader
 from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH
 
@@ -19,7 +21,15 @@ class Player:
         self.format = (32, 32)
         self.resize = (256, 256)
         self.amount = 5
-        self.assets = AssetLoader("assets/spritesheet.png", (32, 32), (128, 128), 5)
+        self.assets = AssetLoader("assets/spritesheet.png", (32, 32), (128, 128), 7)
+        self.spritesheet = {
+            "image": None,
+            "idle": None,
+            "run": None,
+            "jump": None,
+            "fall": None
+        }
+        self.animation = SpritesheetAnimation()
         self.image = self.assets.spritesheet[0]
         self.position = self.image.get_rect(center=(WIDTH / 2, 100))
 
@@ -27,7 +37,7 @@ class Player:
 
 
         #ESTADOS DE COMPORTAMIENTO
-        self.current_side = "right"
+        self.current_side = ["right", "left"]
 
         self.is_grounded = False
 
@@ -51,8 +61,7 @@ class Player:
     def apply_movement(self):
         """ Movimiento del jugador en cuestión. """
 
-
-        self.remember_current_side()
+        self._remember_current_side()
         self._apply_friction()
         self._apply_acceleration()
         self._max_clamp_speed()
@@ -62,27 +71,22 @@ class Player:
 
     def _apply_animation(self):
         if self.dy < 0: #esta saltando
-            print("saltando")
             self.image = self.assets.spritesheet[3]
         elif self.dx < 0:
-            print("izquierda")
-            self.image = self.assets.spritesheet[2]
+            self.image = self.assets.spritesheet[6]
+            #self.image = self.animation.play_animation("run")
         elif self.dx > 0:
-            print("derecha")
-            self.image = self.assets.spritesheet[2]
+            self.image = self.assets.spritesheet[6]
         elif self.dy > 0:
-            print("cayendo")
             self.image = self.assets.spritesheet[4]
         else:
             self.image = self.assets.spritesheet[1]
 
-    def remember_current_side(self):
+    def _remember_current_side(self):
         if self.is_leftward:
             self.current_side = "left"
-            self.turn_over(True)
         elif self.is_rightward:
             self.current_side = "right"
-            self.turn_over(False)
 
     def _apply_jump(self):
         # genera fuerza de salto
@@ -119,14 +123,14 @@ class Player:
 
     def properties(self):
         txt = pygame.font.SysFont("Arial", 20).render(
-            "aceleración %s; atración %s; izq %s; der %s" %(self.dx, self.dy, self.is_leftward, self.is_rightward),
+            "aceleración %s; atración %s; dirección de lado %s" %(self.dx, self.dy, self.current_side),
             True,
             Color("white")
         )
-        return txt, txt.get_rect(center=(WIDTH // 2, 200))
+        return txt, txt.get_rect(topright=(WIDTH - 150, 200))
 
-    def turn_over(self, b: bool) -> pygame.Surface: #HELP
-        return pygame.transform.flip(self.image, b, False)
+    def turn_over(self, b):
+        self.image = pygame.transform.flip(self.image, b, False)
 
     def draw_rect(self):
         return pygame.draw.rect(self.image, Color("white"), (0, 0, 128, 128), 2)

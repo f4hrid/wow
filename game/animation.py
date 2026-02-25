@@ -19,9 +19,9 @@ class SpritesheetAnimation(Animation):
         for frame_index in range(len(list)):
             frame = list[frame_index]
 
-    def play_animation(self, sprite, animation: str=None):
+    def play_animation(self, animation: str=None):
         if animation == "run":
-            self.animate(sprite)
+            print("correr")
         elif animation == "jump":
             print("saltando")
         elif animation == "fall":
