@@ -1,30 +1,38 @@
 import pygame
 
-
-class Animation:
-    pass
+class Animation:...
 
 class SpritesheetAnimation(Animation):
-    def __init__(self):
-        self.asd = True
-        self.catch_time = 0
+    def __init__(self, sprites):
 
-    def animate(self, list):
-        if self.asd:
-            self.asd = False
-            self.catch_time = pygame.time.get_ticks()
+        self.animations = sprites
 
-        print(pygame.time.get_ticks() - self.catch_time)
+        self.has_time_stopped = False
+        self.tiempo_capturado = 0
 
-        for frame_index in range(len(list)):
-            frame = list[frame_index]
+        self.indice = 0
 
-    def play_animation(self, animation: str=None):
-        if animation == "run":
-            print("correr")
-        elif animation == "jump":
-            print("saltando")
-        elif animation == "fall":
-            print("cayendo")
-        else:
-            pass
+
+    def run(self):
+        pass
+    def stop(self):
+        pass
+
+    def play_animation(self):
+        if not self.has_time_stopped:
+            self.has_time_stopped = True
+            self.tiempo_capturado = pygame.time.get_ticks()
+
+        tiempo = pygame.time.get_ticks() - self.tiempo_capturado
+
+        for frame_index in range(len(self.animations)):
+            if tiempo > 50:
+                if self.indice >= len(self.animations) - 1:
+                    self.indice = 0
+                self.indice += frame_index + 1
+                self.tiempo_capturado = pygame.time.get_ticks()
+                break
+            break
+
+        return self.animations[self.indice]
+

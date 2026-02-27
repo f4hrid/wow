@@ -5,3 +5,20 @@
 4: fall
 5: run1
 6: run2
+
+metodo:
+    ha capturado el tiempo? = falso
+    frames por segundos = 100 milisegundos
+
+    si no ha capturado el tiempo -> captura el tiempo, ya ha capturado el tiempo = verdadero
+
+    conteo inicio de la animación = tiempo actual - captura el tiempo
+
+    inicio de la animación
+    imagen 1 de 7
+    para cada indice en un rango del total de la imagenes (# en lista)
+        si el inicio de la animación es mayor a los frames por segundos
+            frame = lista de imágenes en el indice de la imagen
+            inicio de la animacion += frames por segundos
+
+    retornar frame

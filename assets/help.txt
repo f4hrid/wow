@@ -14,3 +14,15 @@ can_edit, can_run
 should_ para decisiones lógicas (normalmente)
 should_retry, should_save
 
+
+recordatorio
+-formalización de una clase común para todas la entidades
+-herencia estandar de pygame.sprite.Sprite, para objetos
+-separación de responsabilidades parte 2: por archivo
+-buenas prácticas: descripción de leneas importantes
+-ignorar el archivo de pruebas alpha
+-
+
+
+
+

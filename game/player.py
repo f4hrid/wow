@@ -17,27 +17,18 @@ class Player:
         self.dx = 0
         self.dy = 0
 
-        self.path = "assets/spritesheet.png"
-        self.format = (32, 32)
-        self.resize = (256, 256)
-        self.amount = 5
-        self.assets = AssetLoader("assets/spritesheet.png", (32, 32), (128, 128), 7)
-        self.spritesheet = {
-            "image": None,
-            "idle": None,
-            "run": None,
-            "jump": None,
-            "fall": None
-        }
-        self.animation = SpritesheetAnimation()
-        self.image = self.assets.spritesheet[0]
+        self.assets = AssetLoader("assets/testspritesheet.png", (32, 32), 128)
+        self.actions = self.assets.spritesheet
+        self.animation = SpritesheetAnimation(self.actions)
+        self.image = self.actions[0]
         self.position = self.image.get_rect(center=(WIDTH / 2, 100))
 
         self.hitbox = None
 
 
         #ESTADOS DE COMPORTAMIENTO
-        self.current_side = ["right", "left"]
+        self.sides = ["left", "right"]
+        self.current_side = self.sides[1]
 
         self.is_grounded = False
 
@@ -66,27 +57,30 @@ class Player:
         self._apply_acceleration()
         self._max_clamp_speed()
         self._apply_jump()
-        self._apply_animation()
+        self.__test_animation()
         self._update_position()
+
+    def __test_animation(self):
+        if self.is_rightward:
+            self.image = self.animation.play_animation()
 
     def _apply_animation(self):
         if self.dy < 0: #esta saltando
-            self.image = self.assets.spritesheet[3]
+            self.animation.play_animation("jump")
         elif self.dx < 0:
-            self.image = self.assets.spritesheet[6]
-            #self.image = self.animation.play_animation("run")
+            self.animation.play_animation("run")
         elif self.dx > 0:
-            self.image = self.assets.spritesheet[6]
+            self.animation.play_animation("run")
         elif self.dy > 0:
-            self.image = self.assets.spritesheet[4]
+            self.animation.play_animation("fall")
         else:
-            self.image = self.assets.spritesheet[1]
+            self.animation.play_animation("idle")
 
     def _remember_current_side(self):
         if self.is_leftward:
-            self.current_side = "left"
+            self.current_side = self.sides[0]
         elif self.is_rightward:
-            self.current_side = "right"
+            self.current_side = self.sides[1]
 
     def _apply_jump(self):
         # genera fuerza de salto
@@ -123,7 +117,7 @@ class Player:
 
     def properties(self):
         txt = pygame.font.SysFont("Arial", 20).render(
-            "aceleración %s; atración %s; dirección de lado %s" %(self.dx, self.dy, self.current_side),
+            "aceleración %s; atración %s; last side %s" %(self.dx, self.dy, self.current_side),
             True,
             Color("white")
         )

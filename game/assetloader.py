@@ -1,25 +1,35 @@
-import pygame
+from pygame.image import load
+from pygame.rect import Rect
+from pygame.transform import scale
 
 class AssetLoader:
     def __init__(self,
                  sheetpath: str,
-                 format: int | tuple[int, int],
-                 resize: int | tuple[int, int],
-                 amount: int):
+                 form: tuple[int, int],
+                 scaled: int | tuple[int, int]
+                 ):
         """
         :param sheetpath: ruta que contiene el archivo de spritesheet
-        :param format: formato de pixeles original de cada sprite
-        :param resize: tamaño a re-escala para cada imagen
-        :param amount: cantidad total de sprites
+        :param form: formato de pixeles original de cada sprite
+        :param scaled: tamaño a re-escala para cada imagen
         """
-
-        # prepara la imagen
-        sheet = pygame.image.load(sheetpath).convert_alpha()
         self.spritesheet = list()
 
-        for image in range(amount):
-            sprites = pygame.transform.scale(
-                sheet.subsurface((format[0] * image, 0, format[0], format[1])),
-                resize
-            )
-            self.spritesheet.append(sprites)
+        self._sheet = load(sheetpath)
+        self.width, self.height = form[0], form[1]
+        self.count = self._sheet.get_width() // self.width
+
+        match scaled:
+            case int():
+                self.size = (scaled, scaled)
+            case tuple():
+                self.size = (scaled[0], scaled[1])
+
+        self.__to_split()
+
+    def __to_split(self):
+        for image in range(self.count):
+            sprite = scale(self._sheet.subsurface(
+                Rect(self.width*image, 0, self.width, self.height)),
+                self.size)
+            self.spritesheet.append(sprite)
