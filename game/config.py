@@ -21,6 +21,8 @@ POWER = None
 
 FPS = 60
 
+ASSET_PATH = "assets/"
+
 MAXIMIZED = False
 WIDTH, HEIGHT = 640, 720
 

@@ -1,35 +1,70 @@
+from typing import Any
+from pygame.surface import Surface
 from pygame.image import load
-from pygame.rect import Rect
 from pygame.transform import scale
+from json import load as cacaroto
+from game.config import ASSET_PATH
+
 
 class AssetLoader:
-    def __init__(self,
-                 sheetpath: str,
-                 form: tuple[int, int],
-                 scaled: int | tuple[int, int]
-                 ):
-        """
-        :param sheetpath: ruta que contiene el archivo de spritesheet
-        :param form: formato de pixeles original de cada sprite
-        :param scaled: tamaño a re-escala para cada imagen
-        """
-        self.spritesheet = list()
+    """ Carga la imagen un spritesheet y construye frames. """
 
-        self._sheet = load(sheetpath)
-        self.width, self.height = form[0], form[1]
-        self.count = self._sheet.get_width() // self.width
+    def __init__(self, asset_name: str, resize: int | tuple[int, int]):
 
-        match scaled:
-            case int():
-                self.size = (scaled, scaled)
-            case tuple():
-                self.size = (scaled[0], scaled[1])
+        self._frames: dict[str, Surface | list[Surface]] = dict() # animaciones separadas y agrupadas
 
-        self.__to_split()
+        sheet: Surface = self._load_sheet(asset_name) # carga la hoja de sprites
 
-    def __to_split(self):
-        for image in range(self.count):
-            sprite = scale(self._sheet.subsurface(
-                Rect(self.width*image, 0, self.width, self.height)),
-                self.size)
-            self.spritesheet.append(sprite)
+        size: tuple[int, int] = self._normalize_size(resize) # normaliza la variación de la entrada resize
+
+        data: Any = ParseJSON().decode(asset_name) # decodifica el archivo de recortes .json
+
+        spritesheet: Any = SpriteSheet(sheet, size) # redimensiona y recorta cada lamina
+
+        for key, info in data.items():
+            if info["type"] == "image":
+                self._frames[key] = spritesheet.frame(info["rect"])
+
+            elif info["type"] == "frame":
+                self._frames[key] = spritesheet.frames(info["frames"])
+
+    def get_frames(self):
+        return self._frames
+
+    @staticmethod
+    def _load_sheet(asset: str) -> Surface:
+        return load('{}{}.png'.format(ASSET_PATH, asset))
+
+    @staticmethod
+    def _normalize_size(resize: int | tuple[int, int]) -> tuple[int, int]:
+        if isinstance(resize, int):
+            return (resize,)*2
+        return resize
+
+
+class SpriteSheet:
+    """ Redimensiona y recorta los frames. """
+
+    def __init__(self, sheet: Surface, size: tuple[int, int]) -> None:
+        self.sheet = sheet
+        self.size = size
+
+    def frame(self, rect: tuple[int, int, int, int]) -> Surface:
+        x, y, w, h = rect
+        return scale(self.sheet.subsurface(x, y, w, h), self.size)
+
+    def frames(self, rects: list[tuple[int, int, int, int]]) -> list[Surface]:
+        frames = []
+        for rect in rects:
+            frames.append(self.frame(rect))
+
+        return frames
+
+
+class ParseJSON:
+    """ Parseo de formato: json a python syntax. """
+
+    @staticmethod
+    def decode(asset: str) -> Any:
+        with open('{}{}.json'.format(ASSET_PATH, asset)) as f:
+            return cacaroto(f)

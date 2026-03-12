@@ -39,14 +39,14 @@ class Game:
                     close()
 
 
-            self._handle_inputs()
+            self.handle_inputs()
 
             self.world.update()
             self.renderer.render()
             clock.tick(self.fps)
 
 
-    def _handle_inputs(self):
+    def handle_inputs(self):
         key = pygame.key.get_pressed()
         self.world.player.is_leftward = key[pygame.K_a] and not key[pygame.K_d]
         self.world.player.is_rightward = key[pygame.K_d] and not key[pygame.K_a]

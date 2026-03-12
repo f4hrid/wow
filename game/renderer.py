@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import RESIZABLE
 
 class Renderer:
-    """ Clase de renderizador. """
+    """ Clase de renderizado. """
 
     def __init__(self, width, height):
         """ Constructor: """
@@ -15,7 +15,7 @@ class Renderer:
     def render(self):
         """ Renderiza y actualiza la ventana. """
 
-        self.screen.fill(pygame.Color("white"))
+        self.screen.fill(pygame.Color("black"))
 
         #self.screen.blit(*self.world.draw()) ARREGLAR AQUI
 

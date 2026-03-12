@@ -1,38 +1,66 @@
-import pygame
+import random
+from pygame.time import get_ticks
 
-class Animation:...
+class Animation:
+    """ Representa una animación individual. """
 
-class SpritesheetAnimation(Animation):
-    def __init__(self, sprites):
+    def __init__(self, frames, delay=60, loop=True):
+        self.frames = frames
+        self.delay = delay
+        self.loop = loop
 
-        self.animations = sprites
+        self.index = 0
+        self.timer = 0
+        self.stop = False
 
-        self.has_time_stopped = False
-        self.tiempo_capturado = 0
+    def reset(self):
+        self.index = 0
+        self.timer = 0
+        self.stop = False
 
-        self.indice = 0
+    def update(self):
+        if self.stop:
+            return self.frames[self.index]
 
+        if len(self.frames) == 1:
+            return self.frames[0]
 
-    def run(self):
-        pass
-    def stop(self):
-        pass
+        now = get_ticks()
 
-    def play_animation(self):
-        if not self.has_time_stopped:
-            self.has_time_stopped = True
-            self.tiempo_capturado = pygame.time.get_ticks()
+        if now - self.timer >= self.delay:
+            self.timer = now
+            self.index += 1
 
-        tiempo = pygame.time.get_ticks() - self.tiempo_capturado
+            if self.index >= len(self.frames):
+                if self.loop:
+                    self.index = 0
+                else:
+                    self.index = len(self.frames) - 1
+                    self.stop = True
+        return self.frames[self.index]
 
-        for frame_index in range(len(self.animations)):
-            if tiempo > 50:
-                if self.indice >= len(self.animations) - 1:
-                    self.indice = 0
-                self.indice += frame_index + 1
-                self.tiempo_capturado = pygame.time.get_ticks()
-                break
-            break
+    def blink(self):
+        if self.stop:
+            return self.frames[self.index]
 
-        return self.animations[self.indice]
+        now = get_ticks()
 
+        if now - self.timer > 1000:
+            self.timer = now
+            self.index = 1
+
+        return self.frames[self.index]
+
+class AnimationController:
+    def __init__(self, animations):
+        self.animations = animations
+        self.current = None
+
+    def play(self, action):
+        if self.current != self.animations[action]:
+            self.current = self.animations[action]
+            self.current.reset()
+
+    def update(self):
+        if self.current:
+            return self.current.update()

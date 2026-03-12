@@ -1,7 +1,9 @@
 import pygame
-from pygame.color import Color
 
-from game.animation import SpritesheetAnimation
+
+from pygame.color import Color
+from pygame.transform import flip
+from game.animation import Animation, AnimationController
 from game.assetloader import AssetLoader
 from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH
 
@@ -17,18 +19,28 @@ class Player:
         self.dx = 0
         self.dy = 0
 
-        self.assets = AssetLoader("assets/testspritesheet.png", (32, 32), 128)
-        self.actions = self.assets.spritesheet
-        self.animation = SpritesheetAnimation(self.actions)
-        self.image = self.actions[0]
+        self.assets = AssetLoader('player', 128).get_frames()
+
+        self.image = self.assets["icon"]
         self.position = self.image.get_rect(center=(WIDTH / 2, 100))
+
+        idle_frames = self.assets["idle"]
+        run_frames = self.assets["run"]
+        jump_frames = self.assets["jump"]
+        fall_frames = self.assets["fall"]
+        self.animation = AnimationController(animations={
+            "idle": Animation(idle_frames),
+            "run": Animation(run_frames),
+            "jump": Animation(jump_frames),
+            "fall": Animation(fall_frames)
+        })
 
         self.hitbox = None
 
 
         #ESTADOS DE COMPORTAMIENTO
-        self.sides = ["left", "right"]
-        self.current_side = self.sides[1]
+        self.sides = {"left": True, "right": False}
+        self.current_side = self.sides["right"]
 
         self.is_grounded = False
 
@@ -36,20 +48,15 @@ class Player:
         self.is_rightward = False
         self.is_upward = False
 
-    def handle_input(self):
-        key = pygame.key.get_pressed()
-        self.is_leftward = key[pygame.K_a] and not key[pygame.K_d]
-        self.is_rightward = key[pygame.K_d] and not key[pygame.K_a]
-        self.is_upward = key[pygame.K_w]
 
     def update(self):
-        self.apply_movement()
+        self._apply_movement()
 
     def draw(self):
         """ Devuelve la surface, datos necesarios para ser dibujada. """
         return self.image, self.position
 
-    def apply_movement(self):
+    def _apply_movement(self):
         """ Movimiento del jugador en cuestión. """
 
         self._remember_current_side()
@@ -57,30 +64,22 @@ class Player:
         self._apply_acceleration()
         self._max_clamp_speed()
         self._apply_jump()
-        self.__test_animation()
+        self._apply_animation()
+        self._update_animation()
         self._update_position()
-
-    def __test_animation(self):
-        if self.is_rightward:
-            self.image = self.animation.play_animation()
+        self._current_side()
 
     def _apply_animation(self):
-        if self.dy < 0: #esta saltando
-            self.animation.play_animation("jump")
+        if self.dy < 0:
+            self.animation.play('jump')
         elif self.dx < 0:
-            self.animation.play_animation("run")
+            self.animation.play('run')
         elif self.dx > 0:
-            self.animation.play_animation("run")
+            self.animation.play('run')
         elif self.dy > 0:
-            self.animation.play_animation("fall")
+            self.animation.play('fall')
         else:
-            self.animation.play_animation("idle")
-
-    def _remember_current_side(self):
-        if self.is_leftward:
-            self.current_side = self.sides[0]
-        elif self.is_rightward:
-            self.current_side = self.sides[1]
+            self.animation.play('idle')
 
     def _apply_jump(self):
         # genera fuerza de salto
@@ -111,6 +110,19 @@ class Player:
         # fija la velocidad limite
         self.dx = max(-self.max_speed, min(self.dx, self.max_speed))
 
+    def _remember_current_side(self):
+        if self.dx < 0:
+            self.current_side = self.sides["left"]
+        elif self.dx > 0:
+            self.current_side = self.sides["right"]
+
+    def _current_side(self):
+        self.image = flip(self.image, self.current_side, False)
+
+    def _update_animation(self):
+        print("recuerdo")
+        self.image = self.animation.update()
+
     def _update_position(self):
         self.position.x += self.dx
         self.position.y += self.dy
@@ -122,9 +134,6 @@ class Player:
             Color("white")
         )
         return txt, txt.get_rect(topright=(WIDTH - 150, 200))
-
-    def turn_over(self, b):
-        self.image = pygame.transform.flip(self.image, b, False)
 
     def draw_rect(self):
         return pygame.draw.rect(self.image, Color("white"), (0, 0, 128, 128), 2)
