@@ -9,8 +9,8 @@ from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH
 
 
 class Player:
+    """ Objeto jugador. """
     def __init__(self):
-        #BÁSICO DE PERSONAJE
         self.hp = HITS
         self.jump = JUMP
         self.max_speed = MAX_SPEED
@@ -20,30 +20,20 @@ class Player:
         self.dy = 0
 
         self.assets = AssetLoader('player', 128).get_frames()
+        self.animation = AnimationController(
+            animations={key: Animation(value) for key, value in self.assets.items()}
+        )
 
         self.image = self.assets["icon"]
-        self.position = self.image.get_rect(center=(WIDTH / 2, 100))
-
-        idle_frames = self.assets["idle"]
-        run_frames = self.assets["run"]
-        jump_frames = self.assets["jump"]
-        fall_frames = self.assets["fall"]
-        self.animation = AnimationController(animations={
-            "idle": Animation(idle_frames),
-            "run": Animation(run_frames),
-            "jump": Animation(jump_frames),
-            "fall": Animation(fall_frames)
-        })
+        self.position = self.image.get_rect()
+        self.position.center = (300, 400)
 
         self.hitbox = None
 
-
-        #ESTADOS DE COMPORTAMIENTO
         self.sides = {"left": True, "right": False}
         self.current_side = self.sides["right"]
 
         self.is_grounded = False
-
         self.is_leftward = False
         self.is_rightward = False
         self.is_upward = False
@@ -51,6 +41,8 @@ class Player:
 
     def update(self):
         self._apply_movement()
+        self._apply_animation()
+
 
     def draw(self):
         """ Devuelve la surface, datos necesarios para ser dibujada. """
@@ -59,26 +51,29 @@ class Player:
     def _apply_movement(self):
         """ Movimiento del jugador en cuestión. """
 
-        self._remember_current_side()
         self._apply_friction()
         self._apply_acceleration()
         self._max_clamp_speed()
         self._apply_jump()
-        self._apply_animation()
-        self._update_animation()
         self._update_position()
-        self._current_side()
 
     def _apply_animation(self):
+        """ Animación del jugador. """
+
+        self._remember_current_side()
+        self._switch_animation()
+        self._update_animation()
+        self._current_side()
+
+    def _switch_animation(self):
         if self.dy < 0:
             self.animation.play('jump')
-        elif self.dx < 0:
-            self.animation.play('run')
-        elif self.dx > 0:
-            self.animation.play('run')
         elif self.dy > 0:
             self.animation.play('fall')
-        else:
+        elif self.dx < 0 or self.dx > 0:
+            self.animation.play('run')
+        elif self.dy == 0 and self.dx == 0:
+            self.animation.animations['idle'].delay = 800
             self.animation.play('idle')
 
     def _apply_jump(self):
@@ -120,7 +115,6 @@ class Player:
         self.image = flip(self.image, self.current_side, False)
 
     def _update_animation(self):
-        print("recuerdo")
         self.image = self.animation.update()
 
     def _update_position(self):
@@ -129,9 +123,9 @@ class Player:
 
     def properties(self):
         txt = pygame.font.SysFont("Arial", 20).render(
-            "aceleración %s; atración %s; last side %s" %(self.dx, self.dy, self.current_side),
+            "aceleración %s; atración %s; last side %s" %(self.dx, self.dy, "left" if self.current_side else "right"),
             True,
-            Color("white")
+            Color("black")
         )
         return txt, txt.get_rect(topright=(WIDTH - 150, 200))
 

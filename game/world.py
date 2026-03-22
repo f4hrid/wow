@@ -3,7 +3,7 @@ from game.player import Player
 
 
 class World:
-    """ Creación del pseudo mundo. """
+    """ Creación del pseudomundo. """
 
     def __init__(self):
         """ Constructor: """
@@ -15,7 +15,7 @@ class World:
         self.player: Player = Player()
 
 
-    def update(self):
+    def update(self, mode):
         """ Actualizar los objetos del mundo. """
 
         self.player.update()
@@ -26,7 +26,7 @@ class World:
 
     def draw(self):
         """ Componentes para dibujar el mundo. """
-        return None
+        return None, None
 
 
     def __ground_level(self, obj: Player):

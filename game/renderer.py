@@ -12,15 +12,18 @@ class Renderer:
         self.world = None
 
 
-    def render(self):
+    def render(self, mode):
         """ Renderiza y actualiza la ventana. """
 
-        self.screen.fill(pygame.Color("black"))
+        self.screen.fill(pygame.Color("white"))
 
-        #self.screen.blit(*self.world.draw()) ARREGLAR AQUI
+        #self.screen.blit(*self.world.draw())
 
         self.screen.blit(*self.world.player.draw())
         #self.screen.blit(*self.world.player.draw_rect()) # DIBUJAR EL RECTANGULO DE POSICIÓN
-        self.screen.blit(*self.world.player.properties())
+
+        if mode == "test":
+            self.screen.blit(*self.world.player.properties())
+
 
         pygame.display.flip()

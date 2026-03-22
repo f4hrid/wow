@@ -1,4 +1,3 @@
-import random
 from pygame.time import get_ticks
 
 class Animation:
@@ -39,18 +38,6 @@ class Animation:
                     self.stop = True
         return self.frames[self.index]
 
-    def blink(self):
-        if self.stop:
-            return self.frames[self.index]
-
-        now = get_ticks()
-
-        if now - self.timer > 1000:
-            self.timer = now
-            self.index = 1
-
-        return self.frames[self.index]
-
 class AnimationController:
     def __init__(self, animations):
         self.animations = animations
@@ -64,3 +51,4 @@ class AnimationController:
     def update(self):
         if self.current:
             return self.current.update()
+        return self.current
