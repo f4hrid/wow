@@ -1,1 +1,8 @@
 (0, 0);(32, 0);(64, 0);(96, 0);(128, 0);(160, 0);(192, 0)
+
+
+colores de caja
+caja gray ó purple indican marco limite de la imagen
+    caja verde (hitbox) indica marco de colisión de objetos únicos
+    caja azul (hitbox) indica marco de colisión de objetos
+    caja roja (hitbox) indica marco de colisión de objetos hostíles

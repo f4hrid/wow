@@ -1,14 +1,23 @@
-import pygame
+from dataclasses import dataclass
 
-
+from pygame.rect import Rect
+from pygame.font import SysFont
 from pygame.color import Color
 from pygame.transform import flip
 from game.animation import Animation, AnimationController
 from game.assetloader import AssetLoader
-from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH
+from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH, HEIGHT
 
 
-class Player:
+@dataclass
+class PlayerState:
+    is_upward: bool = False
+    is_grounded: bool = False
+    is_leftward: bool = False
+    is_rightward: bool = False
+
+
+class Player(PlayerState):
     """ Objeto jugador. """
     def __init__(self):
         self.hp = HITS
@@ -24,19 +33,11 @@ class Player:
             animations={key: Animation(value) for key, value in self.assets.items()}
         )
 
-        self.image = self.assets["icon"]
-        self.position = self.image.get_rect()
-        self.position.center = (300, 400)
+        self.image = self.assets["icon"] # con animation
+        self.box = Rect(0, 0, 128, 128)
+        self.hitbox = self.box
 
-        self.hitbox = None
-
-        self.sides = {"left": True, "right": False}
-        self.current_side = self.sides["right"]
-
-        self.is_grounded = False
-        self.is_leftward = False
-        self.is_rightward = False
-        self.is_upward = False
+        self.facing_left = False
 
 
     def update(self):
@@ -46,16 +47,17 @@ class Player:
 
     def draw(self):
         """ Devuelve la surface, datos necesarios para ser dibujada. """
-        return self.image, self.position
+        return self.image, self.box
+
 
     def _apply_movement(self):
         """ Movimiento del jugador en cuestión. """
 
-        self._apply_friction()
         self._apply_acceleration()
+        self._apply_friction()
         self._max_clamp_speed()
         self._apply_jump()
-        self._update_position()
+        self._update_box()
 
     def _apply_animation(self):
         """ Animación del jugador. """
@@ -63,7 +65,8 @@ class Player:
         self._remember_current_side()
         self._switch_animation()
         self._update_animation()
-        self._current_side()
+        self._update_hitbox()
+        self._flip_side()
 
     def _switch_animation(self):
         if self.dy < 0:
@@ -107,27 +110,33 @@ class Player:
 
     def _remember_current_side(self):
         if self.dx < 0:
-            self.current_side = self.sides["left"]
+            self.facing_left = True
         elif self.dx > 0:
-            self.current_side = self.sides["right"]
+            self.facing_left = False
 
-    def _current_side(self):
-        self.image = flip(self.image, self.current_side, False)
+    def _flip_side(self):
+        self.image = flip(self.image, self.facing_left, False)
+
+    def _box_alignment(self, width, height):
+        if width < 128/2 and height < 128:
+            hitbox = Rect(self.box.x + width, self.box.y + height, 128 - width * 2, 128 - height)
+            return hitbox
+        return self.box
+
+    def _update_hitbox(self):
+        self.hitbox = self._box_alignment(48, 64)
 
     def _update_animation(self):
         self.image = self.animation.update()
 
-    def _update_position(self):
-        self.position.x += self.dx
-        self.position.y += self.dy
+    def _update_box(self):
+        self.box.x += self.dx
+        self.box.y += self.dy
 
     def properties(self):
-        txt = pygame.font.SysFont("Arial", 20).render(
-            "aceleración %s; atración %s; last side %s" %(self.dx, self.dy, "left" if self.current_side else "right"),
+        txt = SysFont("Arial", 20).render(
+            "aceleración %s; atración %s; last side %s" %(self.dx, self.dy, "left" if self.facing_left else "right"),
             True,
             Color("black")
         )
         return txt, txt.get_rect(topright=(WIDTH - 150, 200))
-
-    def draw_rect(self):
-        return pygame.draw.rect(self.image, Color("white"), (0, 0, 128, 128), 2)

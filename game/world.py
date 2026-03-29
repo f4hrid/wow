@@ -33,10 +33,10 @@ class World:
         """ Fija el nivel del suelo para todos los objetos del mundo. """
 
         # mientras no este en el aire
-        if obj.position.bottom < self.floor:
+        if obj.box.bottom < self.floor:
             return
         # establece la altura del mundo
-        obj.position.bottom = self.floor
+        obj.box.bottom = self.floor
         # reestablece la velocidad delta del objeto
         obj.dy = 0
         # verifica si el objeto tiene el estado de
