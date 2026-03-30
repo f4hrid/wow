@@ -39,7 +39,7 @@ class Animation:
         return self.frames[self.index]
 
 class AnimationController:
-    def __init__(self, animations):
+    def __init__(self, animations: object) -> None:
         self.animations = animations
         self.current = None
 

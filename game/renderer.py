@@ -19,11 +19,11 @@ class Renderer:
         #self.screen.blit(*self.world.draw())
         self.screen.blit(*self.world.player.draw())
 
-        pygame.draw.rect(self.screen, "cyan", (0,555,800,10))
+        pygame.draw.rect(self.screen, "cyan", (0,555,800,-10))
 
         if mode == "test":
             if hasattr(self.world.player, "hitbox"):
-                pygame.draw.rect(self.screen, "gray", self.world.player.box, 1)
+                pygame.draw.rect(self.screen, "gray", self.world.player.position, 1)
                 pygame.draw.rect(self.screen, "green", self.world.player.hitbox, 1)
 
             self.screen.blit(*self.world.player.properties())

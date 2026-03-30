@@ -10,10 +10,10 @@ dt = 0
 
 player_img = pygame.image.load("tassets/sticktest.png")
 player_pos = pygame.Vector2(0,0)
-print()
 
 spx = 90
 spy = 20
+
 
 while running:
     # poll for events

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from pygame import Vector2
 from pygame.rect import Rect
 from pygame.font import SysFont
 from pygame.color import Color
@@ -7,6 +8,7 @@ from pygame.transform import flip
 from game.animation import Animation, AnimationController
 from game.assetloader import AssetLoader
 from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH, HEIGHT
+from game.classes import Hitbox
 
 
 @dataclass
@@ -28,14 +30,14 @@ class Player(PlayerState):
         self.dx = 0
         self.dy = 0
 
-        self.assets = AssetLoader('player', 128).get_frames()
+        self.assets = AssetLoader(asset_name='player', resize=128).get_frames()
+        self.hitbox = Hitbox(offset_x=48, offset_y=64, width=40, height=64)
         self.animation = AnimationController(
-            animations={key: Animation(value) for key, value in self.assets.items()}
+            animations={key: Animation(frames=value) for key, value in self.assets.items()}
         )
 
-        self.image = self.assets["icon"] # con animation
-        self.box = Rect(0, 0, 128, 128)
-        self.hitbox = self.box
+        self.image = self.assets["icon"]
+        self.position = Rect(0,0,128,128)
 
         self.facing_left = False
 
@@ -43,11 +45,12 @@ class Player(PlayerState):
     def update(self):
         self._apply_movement()
         self._apply_animation()
+        self._update_hitbox()
 
 
     def draw(self):
         """ Devuelve la surface, datos necesarios para ser dibujada. """
-        return self.image, self.box
+        return self.image, self.position
 
 
     def _apply_movement(self):
@@ -65,7 +68,6 @@ class Player(PlayerState):
         self._remember_current_side()
         self._switch_animation()
         self._update_animation()
-        self._update_hitbox()
         self._flip_side()
 
     def _switch_animation(self):
@@ -117,25 +119,19 @@ class Player(PlayerState):
     def _flip_side(self):
         self.image = flip(self.image, self.facing_left, False)
 
-    def _box_alignment(self, width, height):
-        if width < 128/2 and height < 128:
-            hitbox = Rect(self.box.x + width, self.box.y + height, 128 - width * 2, 128 - height)
-            return hitbox
-        return self.box
-
     def _update_hitbox(self):
-        self.hitbox = self._box_alignment(48, 64)
+        self.hitbox.update(self.position, self.facing_left)
 
     def _update_animation(self):
         self.image = self.animation.update()
 
     def _update_box(self):
-        self.box.x += self.dx
-        self.box.y += self.dy
+        self.position.x += self.dx
+        self.position.y += self.dy
 
     def properties(self):
         txt = SysFont("Arial", 20).render(
-            "aceleración %s; atración %s; last side %s" %(self.dx, self.dy, "left" if self.facing_left else "right"),
+            "aceleración %s; atración %s; last side %s" %(self.dx.__int__(), self.dy, "left" if self.facing_left else "right"),
             True,
             Color("black")
         )
