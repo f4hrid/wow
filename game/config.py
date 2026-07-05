@@ -1,6 +1,6 @@
 """
 File: config.py
-Author: f4hridev
+Author: f4hrid
 Email: ricueroruiz@outlook.com
 Github: https://github.com/f4hrid
 """

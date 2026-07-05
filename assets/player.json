@@ -1,32 +1,47 @@
 {
-  "icon": {
-    "type": "image",
-    "rect": [0, 0, 32, 32]
-  },
-  "idle": {
-    "type": "frame",
-    "frames": [
-      [32, 0, 32, 32],
-      [64, 0, 32, 32]
-    ]
-  },
-  "jump": {
-    "type": "frame",
-    "frames": [
-      [96, 0, 32, 32]
-    ]
-  },
-  "fall": {
-    "type": "frame",
-    "frames": [
-      [128, 0, 32, 32]
-    ]
-  },
-  "run": {
-    "type": "frame",
-    "frames": [
-      [160, 0, 32, 32],
-      [192, 0, 32, 32]
-    ]
+  "frames": [
+    {
+      "id": "idle1",
+      "type": "idle",
+      "frame": {"x": 32, "y": 0, "w": 32, "h": 32},
+      "duration": 1000
+    },
+    {
+      "id": "idle2",
+      "type": "idle",
+      "frame": {"x": 64, "y": 0, "w": 32, "h": 32},
+      "duration": 500
+    },
+    {
+      "id": "jump",
+      "type": "jump",
+      "frame": {"x": 96, "y": 0, "w": 32, "h": 32},
+      "duration": 0
+    },
+    {
+      "id": "fall",
+      "type": "fall",
+      "frame": {"x": 128, "y": 0, "w": 32, "h": 32},
+      "duration": 0
+    },
+    {
+      "id": "run1",
+      "type": "run",
+      "frame": {"x": 160, "y": 0, "w": 32, "h": 32},
+      "duration": 100
+    },
+    {
+      "id": "run2",
+      "type": "run",
+      "frame": {"x": 192, "y": 0, "w": 32, "h": 32},
+      "duration": 100
+    }
+  ],
+  "meta": {
+    "app": "https://github.com/LibreSprite/LibreSprite/",
+    "version": "1.1-dev",
+    "format": "RGBA8888",
+    "size": { "w": 224, "h": 32 },
+    "scale": [128, 128]
   }
 }

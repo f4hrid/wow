@@ -42,7 +42,7 @@ class Game:
         clock = pygame.time.Clock()
 
         while True:
-            if not self.maximized and not self.setting:
+            if self.maximized and not self.setting:
                 Window.from_display_module().maximize()
                 self.maximized = True
 

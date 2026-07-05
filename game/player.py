@@ -1,15 +1,12 @@
 from dataclasses import dataclass
-
-from pygame import Vector2
 from pygame.rect import Rect
 from pygame.font import SysFont
 from pygame.color import Color
 from pygame.transform import flip
 from game.animation import Animation, AnimationController
-from game.assetloader import AssetLoader
+from game.sprite import load_sprites
 from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH, HEIGHT
 from game.classes import Hitbox
-
 
 @dataclass
 class PlayerState:
@@ -21,6 +18,7 @@ class PlayerState:
 
 class Player(PlayerState):
     """ Objeto jugador. """
+
     def __init__(self):
         self.hp = HITS
         self.jump = JUMP
@@ -30,13 +28,18 @@ class Player(PlayerState):
         self.dx = 0
         self.dy = 0
 
-        self.assets = AssetLoader(asset_name='player', resize=128).get_frames()
-        self.hitbox = Hitbox(offset_x=48, offset_y=64, width=40, height=64)
-        self.animation = AnimationController(
-            animations={key: Animation(frames=value) for key, value in self.assets.items()}
+        self.assets = load_sprites(
+            "assets/player.png",
+            "assets/player.json"
         )
 
-        self.image = self.assets["icon"]
+        self.animation = AnimationController({
+            key: Animation(value) for key, value in self.assets.items()
+        })
+
+        self.image = self.animation.update()
+
+
         self.position = Rect(0,0,128,128)
 
         self.facing_left = False
@@ -45,11 +48,12 @@ class Player(PlayerState):
     def update(self):
         self._apply_movement()
         self._apply_animation()
-        self._update_hitbox()
+        #self._update_hitbox() # TODO: por refactorización de la clase este método tuvo afectaciones. Quizás entre en reconsideración a refactorización o eliminación permanente
+
 
 
     def draw(self):
-        """ Devuelve la surface, datos necesarios para ser dibujada. """
+        """ Los datos necesarios para ser dibujada """
         return self.image, self.position
 
 
@@ -68,7 +72,8 @@ class Player(PlayerState):
         self._remember_current_side()
         self._switch_animation()
         self._update_animation()
-        self._flip_side()
+
+        #self._flip_side()
 
     def _switch_animation(self):
         if self.dy < 0:
@@ -78,7 +83,6 @@ class Player(PlayerState):
         elif self.dx < 0 or self.dx > 0:
             self.animation.play('run')
         elif self.dy == 0 and self.dx == 0:
-            self.animation.animations['idle'].delay = 800
             self.animation.play('idle')
 
     def _apply_jump(self):
@@ -111,9 +115,9 @@ class Player(PlayerState):
         self.dx = max(-self.max_speed, min(self.dx, self.max_speed))
 
     def _remember_current_side(self):
-        if self.dx < 0:
+        if self.dx < 0 and not self.facing_left:
             self.facing_left = True
-        elif self.dx > 0:
+        elif self.dx > 0 and self.facing_left:
             self.facing_left = False
 
     def _flip_side(self):
@@ -136,3 +140,20 @@ class Player(PlayerState):
             Color("black")
         )
         return txt, txt.get_rect(topright=(WIDTH - 150, 200))
+
+    """
+        def _remember_current_side(self):
+        if self.dx < 0 and not self.facing_left:
+            print("cambio a izquierda")
+            self.facing_left = True
+            self.has_flip = True
+        elif self.dx > 0 and self.facing_left:
+            print("cambio a derecha")
+            self.facing_left = False
+            self.has_flip = True
+
+    def _flip_side(self):
+        if self.has_flip:
+            self.image = flip(self.image, self.facing_left, False)
+            self.has_flip = False
+    """

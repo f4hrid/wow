@@ -1,3 +1,74 @@
+import pygame
+from pygame.surface import Surface
+
+from game.sprite import Load, Sprite
+from collections import defaultdict
+from game.animation import AnimationController, Animation
+
+
+
+surface = Load.surface("assets/player.png")
+data, meta = Load.data("assets/player.json")
+
+assets = Sprite.spritesheet(surface, data)
+
+for key, value in assets.items():
+    print(key, value)
+
+
+
+animation = AnimationController(animations={"run": Animation(assets["run"])})
+#AnimationController(Animations={key: Animation(value) for key, value in assets})
+
+pygame.init()
+
+while True:
+    imagen = animation.update()
+    animation.play("run")
+
+
+
+
+# ------------------------------------------------------
+
+# ------------------------------------------------------
+
+"""
+animations = 
+{
+    "idle": <Animation>,
+    "run": <Animation>,
+    "jump": <Animation>,
+    "fall": <Animation>
+}
+assets =
+{
+    "animation1": [(<surface>, duration)],
+    "animation2": [(<surface>, duration), (<surface>, duration)], # LLAVE Y VALOR
+    "animation3": [(<surface>, duration), (<surface>, duration)],
+    "animation4": [(<surface>, duration), (<surface>, duration)]
+}
+data =
+{
+    "frames": [
+        {
+            "info": ...
+        },
+        {
+            "info": ...
+        },
+        {
+            "info": ...
+        },
+        {
+            "info": ...
+        }
+    ]
+}
+"""
+
+
+"""
 # Example file showing a circle moving on screen
 import pygame
 
@@ -8,7 +79,7 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-player_img = pygame.image.load("tassets/sticktest.png")
+player_img = pygame.image.load_surface("tassets/sticktest.png")
 player_pos = pygame.Vector2(0,0)
 
 spx = 90
@@ -49,3 +120,4 @@ while running:
     dt = clock.tick(60) / 1000
 
 pygame.quit()
+"""

@@ -1,0 +1,51 @@
+{
+  "frames": {
+    "icon": {
+      "src": {"x": 0, "y": 0, "w": 32, "h": 32},
+      "source_size": {"w": 32, "h": 32},
+      "duration": 0
+    },
+    "idle0": {
+      "src": {"x": 32, "y": 0, "w": 32, "h": 32},
+      "source_size": {"w": 32, "h": 32},
+      "duration": [100, 1000]
+    },
+    "idle1": {
+      "src": {"x": 64, "y": 0, "w": 32, "h": 32},
+      "source_size": {"w": 32, "h": 32},
+      "duration": 100
+    },
+    "jump0": {
+      "src": {"x": 96, "y": 0, "w": 32, "h": 32},
+      "source_size": {"w": 32, "h": 32},
+      "duration": 0
+    },
+    "fall0": {
+      "src": {"x": 128, "y": 0, "w": 32, "h": 32},
+      "source_size": {"w": 32, "h": 32},
+      "duration": 0
+    },
+    "run0": {
+      "src": {"x": 160, "y": 0, "w": 32, "h": 32},
+      "source_size": {"w": 32, "h": 32},
+      "duration": 100
+    },
+    "run1": {
+      "src": {"x": 192, "y": 0, "w": 32, "h": 32},
+      "source_size": {"w": 32, "h": 32},
+      "duration": 100
+    }
+  },
+  "animations": {
+    "icon": ["icon"],
+    "idle": ["idle0", "idle1"],
+    "jump": ["jump0"],
+    "fall": ["fall0"],
+    "run": ["run0", "run1"]
+  },
+  "meta": {
+    "image": "",
+    "size": {"w": 224, "h": 32},
+    "scale": 1
+  }
+}
