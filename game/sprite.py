@@ -7,11 +7,14 @@ from json import load as json_load
 
 from game.animation import AnimationController, Animation
 
-def load_sprites(image_path: str, data_path: str):
+def load_character(image_path: str, data_path: str) -> None:
     """ Carga del contenido visual """
     surface = Load.surface(image_path)
     frames, metadata = Load.data(data_path)
-    return Sprite(surface).set_frames(frames).set_scale_to(metadata).build()
+    return (Sprite(surface)
+            .set_frames(frames)
+            .set_scale_to(metadata)
+            .build())
 
 
 class MetadataNotFoundError(Exception):

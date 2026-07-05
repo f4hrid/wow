@@ -4,7 +4,7 @@ from pygame.font import SysFont
 from pygame.color import Color
 from pygame.transform import flip
 from game.animation import Animation, AnimationController
-from game.sprite import load_sprites
+from game.sprite import load_character
 from game.config import HITS, JUMP, MAX_SPEED, SPEED, SLIP, WIDTH, HEIGHT
 from game.classes import Hitbox
 
@@ -28,7 +28,7 @@ class Player(PlayerState):
         self.dx = 0
         self.dy = 0
 
-        self.assets = load_sprites(
+        self.assets = load_character(
             "assets/player.png",
             "assets/player.json"
         )
@@ -49,8 +49,6 @@ class Player(PlayerState):
         self._apply_movement()
         self._apply_animation()
         #self._update_hitbox() # TODO: por refactorización de la clase este método tuvo afectaciones. Quizás entre en reconsideración a refactorización o eliminación permanente
-
-
 
     def draw(self):
         """ Los datos necesarios para ser dibujada """
@@ -73,7 +71,7 @@ class Player(PlayerState):
         self._switch_animation()
         self._update_animation()
 
-        #self._flip_side()
+        self._flip_side()
 
     def _switch_animation(self):
         if self.dy < 0:
@@ -132,28 +130,3 @@ class Player(PlayerState):
     def _update_box(self):
         self.position.x += self.dx
         self.position.y += self.dy
-
-    def properties(self):
-        txt = SysFont("Arial", 20).render(
-            "aceleración %s; atración %s; last side %s" %(self.dx.__int__(), self.dy, "left" if self.facing_left else "right"),
-            True,
-            Color("black")
-        )
-        return txt, txt.get_rect(topright=(WIDTH - 150, 200))
-
-    """
-        def _remember_current_side(self):
-        if self.dx < 0 and not self.facing_left:
-            print("cambio a izquierda")
-            self.facing_left = True
-            self.has_flip = True
-        elif self.dx > 0 and self.facing_left:
-            print("cambio a derecha")
-            self.facing_left = False
-            self.has_flip = True
-
-    def _flip_side(self):
-        if self.has_flip:
-            self.image = flip(self.image, self.facing_left, False)
-            self.has_flip = False
-    """
